@@ -2,11 +2,16 @@ package com.scaler.authenticationservice.Services;
 
 
 import com.scaler.authenticationservice.Dtos.UserDTO;
+import com.scaler.authenticationservice.Exception.SessionNotFoundException;
 import com.scaler.authenticationservice.Exception.UserNotFoundException;
 import com.scaler.authenticationservice.Models.Role;
+import com.scaler.authenticationservice.Models.Session;
+import com.scaler.authenticationservice.Models.SessionStatus;
 import com.scaler.authenticationservice.Models.User;
 import com.scaler.authenticationservice.Repository.RolesRepository;
+import com.scaler.authenticationservice.Repository.SessionRepository;
 import com.scaler.authenticationservice.Repository.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -17,9 +22,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final RolesRepository rolesRepository;
 
-    public UserService(UserRepository userRepository, RolesRepository rolesRepository) {
+
+    public UserService(UserRepository userRepository
+                            , RolesRepository rolesRepository
+                                    ) {
+
         this.userRepository = userRepository;
         this.rolesRepository = rolesRepository;
+
+
     }
 
     public UserDTO getUserDetails(Long userId) {
@@ -52,7 +63,8 @@ public class UserService {
 
         return UserDTO.from(user);
 
-
     }
+
+
 }
 

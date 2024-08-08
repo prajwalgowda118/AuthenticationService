@@ -1,6 +1,7 @@
 package com.scaler.authenticationservice.Services;
 
 import com.scaler.authenticationservice.Dtos.UserDTO;
+import com.scaler.authenticationservice.Exception.SessionNotFoundException;
 import com.scaler.authenticationservice.Exception.UserAlreadyExistException;
 import com.scaler.authenticationservice.Exception.UserNotFoundException;
 import com.scaler.authenticationservice.Models.Session;
@@ -23,6 +24,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private SessionRepository sessionRepository;
+   // private SessionRepository sessionRepository;
 
     public AuthService(UserRepository userRepository,SessionRepository sessionRepository) {
         this.userRepository = userRepository;
@@ -80,4 +82,57 @@ public class AuthService {
         return response;
 
     }
+
+    public ResponseEntity<Void> logoutUser(Long userId,String token)  throws SessionNotFoundException {
+
+       /* Optional<User> optionalUser = userRepository.findById(Math.toIntExact(userId));
+        if (!optionalUser.isPresent()) {
+            throw new UserNotFoundException("user not found");
+
+        }
+        User user = optionalUser.get();*/
+        Optional<Session> currentSession=sessionRepository.findByTokenAndUser_Id(token,userId);
+        if (currentSession.isEmpty()) {
+
+            throw new SessionNotFoundException("Session not found for the user " +userId);
+
+        }
+        Session session = currentSession.get();
+
+        if(!(session.getSessionStatus().equals(SessionStatus.ACTIVE))){
+
+            return null;
+        }
+        session.setSessionStatus(SessionStatus.EXPIRED);
+        sessionRepository.save(session);
+
+        return ResponseEntity.ok().build();
+    }
+
+    public Optional<UserDTO> validate(Long userId,String token) throws UserNotFoundException , SessionNotFoundException {
+
+        Optional<User> optionalUser = userRepository.findById(Math.toIntExact(userId));
+        if (!optionalUser.isPresent()) {
+            throw new UserNotFoundException("user not found");
+
+        }
+        User user = optionalUser.get();
+        Optional<Session> currentSession=sessionRepository.findByTokenAndUser_Id(token,userId);
+        if (currentSession.isEmpty()) {
+
+            throw new SessionNotFoundException("Session not found for the user " +userId);
+
+        }
+        Session session = currentSession.get();
+
+        if(!(session.getSessionStatus().equals(SessionStatus.ACTIVE))){
+
+            return null;
+        }
+
+        UserDTO userDTO =UserDTO.from(user);
+
+        return Optional.of(userDTO);
+    }
+
 }
