@@ -46,8 +46,8 @@ public class AuthController {
         String email = loginRequestDto.getEmail();
         String password = loginRequestDto.getPassword();
 
-        UserDTO userDTO=authService.login(email,password);
-
+       // UserDTO userDTO=authService.login(email,password);
+        return authService.login(email,password);
 
     }
 

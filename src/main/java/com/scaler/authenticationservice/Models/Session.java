@@ -18,7 +18,7 @@ public class Session extends BaseModel {
     private SessionStatus sessionStatus;
     @ManyToOne
     private User user;
-    private String Token;
+    private String token;
 
 
 }
